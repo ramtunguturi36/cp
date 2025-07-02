@@ -1,40 +1,55 @@
 import java.util.*;
 
-class ConnectedComponents {
-    private int[] parent;
-    private int[] size;
+class UnionFind {
+    int[] parent;
+    int[] rank;
 
-    public int countComponents(int n, int[][] edges) {
+    public UnionFind(int n) {
         parent = new int[n];
-        size = new int[n];
-        Arrays.fill(parent, -1);
-        Arrays.fill(size, 1);
+        rank = new int[n];
+        for (int i = 0; i < n; i++) {
+            parent[i] = i;
+            rank[i] = 1;
+        }
+    }
 
+    public int find(int x) {
+        if (parent[x] != x) {
+            parent[x] = find(parent[x]); // Path Compression
+        }
+        return parent[x];
+    }
+
+    public void unionfind(int x, int y) {
+        int px = find(x);
+        int py = find(y);
+        if (px == py) return;
+
+        if (rank[px] > rank[py]) {
+            parent[py] = px;
+            rank[px] += rank[py];
+        } else {
+            parent[px] = py;
+            rank[py] += rank[px];
+        }
+    }
+}
+
+public class ConnectedComponents {
+
+    public static int countComponents(int n, int[][] edges) {
+        UnionFind uf = new UnionFind(n);
         int components = n;
+
         for (int[] edge : edges) {
-            int root1 = find(edge[0]);
-            int root2 = find(edge[1]);
-            
-            if (root1 != root2) {
-                // Union by size (smaller tree merges into larger tree)
-                if (size[root1] < size[root2]) {
-                    parent[root1] = root2;
-                    size[root2] += size[root1];
-                } else {
-                    parent[root2] = root1;
-                    size[root1] += size[root2];
-                }
+            int u = edge[0];
+            int v = edge[1];
+            if (uf.find(u) != uf.find(v)) {
+                uf.unionfind(u, v);
                 components--;
             }
         }
         return components;
-    }
-
-    private int find(int node) {
-        while (parent[node] >= 0) {
-            node = parent[node];
-        }
-        return node;
     }
 
     public static void main(String[] args) {
@@ -42,13 +57,12 @@ class ConnectedComponents {
         int n = sc.nextInt(); // Number of nodes
         int e = sc.nextInt(); // Number of edges
         int[][] edges = new int[e][2];
-        
+
         for (int i = 0; i < e; i++) {
             edges[i][0] = sc.nextInt();
             edges[i][1] = sc.nextInt();
         }
-        
-        ConnectedComponents solver = new ConnectedComponents();
-        System.out.println(solver.countComponents(n, edges));
+
+        System.out.println(countComponents(n, edges));
     }
 }

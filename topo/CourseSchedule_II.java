@@ -1,61 +1,62 @@
+
 import java.util.*;
 
-class CourseSchedule_II {
-    public int[] findOrder(int numCourses, int[][] prerequisites) {
+public class CourseSchedule_II {
+
+    public static int[] findOrder(int numCourses, int[][] prerequisites) {
         List<List<Integer>> graph = new ArrayList<>();
-        for(int i = 0; i < numCourses; i++) {
+        int[] indegree = new int[numCourses];
+        for (int i = 0; i < numCourses; i++) {
             graph.add(new ArrayList<>());
         }
 
-        for(int i = 0; i < prerequisites.length; i++) {
-            graph.get(prerequisites[i][1]).add(prerequisites[i][0]);
+        for (int[] prerequisite : prerequisites) {
+            graph.get(prerequisite[1]).add(prerequisite[0]);
+            indegree[prerequisite[0]]++; 
         }
 
-        int[] indegree = new int[numCourses];
-        for(int i = 0; i < numCourses; i++) {
-            for(int node : graph.get(i)) {
-                indegree[node]++;
-            }
-        }
+        
 
         Queue<Integer> q = new LinkedList<>();
-        for(int i = 0; i < indegree.length; i++) {
-            if(indegree[i] == 0) {
+        for (int i = 0; i < numCourses; i++) {
+            if (indegree[i] == 0) {
                 q.add(i);
             }
         }
 
-        int[] ts = new int[numCourses];
-        int i = 0;
-        
-        while(!q.isEmpty()) {
-            int node = q.remove();
-            ts[i++] = node;
+        int[] order = new int[numCourses];
+        int idx = 0;
 
-            for(int nbr : graph.get(node)) {
+        while (!q.isEmpty()) {
+            int node = q.poll();
+            order[idx++] = node;
+
+            for (int nbr : graph.get(node)) {
                 indegree[nbr]--;
-                if(indegree[nbr] == 0) {
+                if (indegree[nbr] == 0) {
                     q.add(nbr);
                 }
             }
         }
 
-        if(i == 0 || i < numCourses) return new int[]{};
-        return ts;
+        if (idx < numCourses) {
+            return new int[]{};  
+        }
+        return order;
     }
 
     public static void main(String[] args) {
         Scanner sc = new Scanner(System.in);
-        CourseSchedule_II cs = new CourseSchedule_II();
 
         int numCourses = sc.nextInt();
         int m = sc.nextInt();
         int[][] prerequisites = new int[m][2];
-        for(int i = 0; i < m; i++) {
+
+        for (int i = 0; i < m; i++) {
             prerequisites[i][0] = sc.nextInt();
             prerequisites[i][1] = sc.nextInt();
         }
 
-        System.out.println(Arrays.toString(cs.findOrder(numCourses, prerequisites)));
+        System.out.println(Arrays.toString(findOrder(numCourses, prerequisites)));
     }
 }

@@ -1,7 +1,7 @@
 import java.util.*;
 
 public class CourseSchedule_I {
-    public boolean canFinish(int numCourses, int[][] prerequisites) {
+    public static boolean canFinish(int numCourses, int[][] prerequisites) {
         List<List<Integer>> graph = new ArrayList<>();
         int[] indegree = new int[numCourses];
 
@@ -9,10 +9,8 @@ public class CourseSchedule_I {
             graph.add(new ArrayList<>());
 
         for (int[] pre : prerequisites) {
-            int course = pre[0];
-            int prereq = pre[1];
-            graph.get(prereq).add(course);
-            indegree[course]++;
+            graph.get(pre[1]).add(pre[0]);
+            indegree[pre[0]]++;
         }
 
         Queue<Integer> queue = new LinkedList<>();
@@ -21,40 +19,34 @@ public class CourseSchedule_I {
                 queue.offer(i);
         }
 
-        int finishedCourses = 0;
-
+        int finished = 0;
         while (!queue.isEmpty()) {
-            int current = queue.poll();
-            finishedCourses++;
+            int curr = queue.poll();
+            finished++;
 
-            for (int neighbor : graph.get(current)) {
-                indegree[neighbor]--;
-                if (indegree[neighbor] == 0)
-                    queue.offer(neighbor);
+            for (int next : graph.get(curr)) {
+                indegree[next]--;
+                if (indegree[next] == 0)
+                    queue.offer(next);
             }
         }
 
-        return finishedCourses == numCourses;
+        return finished == numCourses;
     }
 
     public static void main(String[] args) {
         Scanner sc = new Scanner(System.in);
-        CourseSchedule_I cs = new CourseSchedule_I();
 
-        System.out.print("Enter number of courses: ");
         int numCourses = sc.nextInt();
-
-        System.out.print("Enter number of prerequisite pairs: ");
         int m = sc.nextInt();
 
         int[][] prerequisites = new int[m][2];
-        System.out.println("Enter prerequisites");
         for (int i = 0; i < m; i++) {
             prerequisites[i][0] = sc.nextInt();
             prerequisites[i][1] = sc.nextInt();
         }
 
-        boolean canFinish = cs.canFinish(numCourses, prerequisites);
-        System.out.println(canFinish);
+        System.out.println(canFinish(numCourses, prerequisites));
     }
 }
+
