@@ -1,5 +1,11 @@
 import java.util.*;
 
+
+class Trie {
+    Trie[] children = new Trie[26];
+    boolean isWord;
+}
+
 class Solution {
     Trie root = new Trie();
     String res = "";
@@ -34,10 +40,7 @@ class Solution {
     }
 }
 
-class Trie {
-    Trie[] children = new Trie[26];
-    boolean isWord;
-}
+
 
 class LongestWord {
     public static void main(String args[]) {
